@@ -1,0 +1,27 @@
+{
+  "common": {
+    "name": "open-wa",
+    "title": "Open-WA WhatsApp Gateway",
+    "desc": "Connects ioBroker to an open-wa WhatsApp gateway",
+    "version": "0.0.1",
+    "news": {
+      "0.0.1": {
+        "en": "Initial version",
+        "de": "Erste Version"
+      }
+    },
+    "mode": "daemon",
+    "type": "messaging",
+    "adminUI": {
+      "config": "json"
+    },
+    "icon": "open-wa.png"
+  },
+  "native": {
+    "serverIp": "192.168.178.10",
+    "serverPort": 3005,
+    "basePath": ""
+  },
+  "objects": [],
+  "instanceObjects": []
+}
