@@ -2,14 +2,8 @@
 
 Adapter to send WhatsApp messages via an open-wa gateway.
 
-## Custom Blockly block
-This adapter ships a Blockly block. After installing/updating the adapter, restart the **javascript** adapter once so Blockly detects the custom blocks.
+## Custom Blockly block (safe)
+This adapter ships `admin/blockly.js`.
+After installing/updating: restart **javascript.0** once so Blockly reloads custom blocks.
 
-You should then find a block under **Sendto** named **Open-WA**.
-
-## Payload
-```json
-{
-  "args": { "to": "491726361044@c.us", "content": "Hello" }
-}
-```
+If Blockly ever becomes empty: rename `admin/blockly.js` to disable the custom block and reload Blockly.
