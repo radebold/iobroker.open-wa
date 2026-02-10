@@ -1,13 +1,13 @@
 # ioBroker.open-wa
 
-Minimal ioBroker adapter to send WhatsApp messages via an open-wa gateway.
+Adapter to send WhatsApp messages via an open-wa gateway.
 
-## Usage (Blockly)
-1. Set `open-wa.0.send.to` to `+49...` or already to a chat id like `4917...@c.us` / group id `...@g.us`
-2. Write your message to `open-wa.0.send.text`
+## Custom Blockly block
+This adapter ships a Blockly block. After installing/updating the adapter, restart the **javascript** adapter once so Blockly detects the custom blocks.
 
-The adapter converts phone numbers like `+491726361044` to `491726361044@c.us` automatically and sends:
+You should then find a block under **Sendto** named **Open-WA**.
 
+## Payload
 ```json
 {
   "args": { "to": "491726361044@c.us", "content": "Hello" }

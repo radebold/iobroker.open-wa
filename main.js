@@ -12,11 +12,9 @@ class OpenWa extends utils.Adapter {
     this.on('unload', this.onUnload.bind(this));
 
     this.api = null;
-    this.baseUrl = '';
   }
 
   async onReady() {
-    // create states (important for Blockly)
     await this.setObjectNotExistsAsync('send.to', {
       type: 'state',
       common: { name: 'Recipient (phone or chatId)', type: 'string', role: 'text', read: true, write: true },
@@ -49,16 +47,13 @@ class OpenWa extends utils.Adapter {
 
     this.subscribeStates('send.text');
 
-    // build base url
     const ip = this.config.serverIp;
     const port = this.config.serverPort;
     const basePath = (this.config.basePath || '').replace(/\/+$/, '');
-    this.baseUrl = `http://${ip}:${port}${basePath ? '/' + basePath.replace(/^\/+/, '') : ''}`;
+    const url = `http://${ip}:${port}${basePath ? '/' + basePath.replace(/^\/+/, '') : ''}`;
 
-    this.log.info(`Using gateway: ${this.baseUrl}`);
-    this.api = new OpenWaApi(this.baseUrl);
-
-    // mark connected unknown until first send/ping
+    this.log.info(`Using gateway: ${url}`);
+    this.api = new OpenWaApi(url);
     await this.setStateAsync('info.connection', true, true);
   }
 

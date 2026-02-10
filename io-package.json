@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "open-wa",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "title": "Open-WA WhatsApp Gateway",
     "titleLang": {
       "en": "Open-WA WhatsApp Gateway",
@@ -19,16 +19,15 @@
     "mode": "daemon",
     "type": "messaging",
     "icon": "open-wa.png",
-    "extIcon": "https://raw.githubusercontent.com/radebold/iobroker.open-wa/master/admin/open-wa.png",
     "enabled": true,
-    "readme": "https://github.com/radebold/iobroker.open-wa/blob/master/README.md",
     "loglevel": "info",
     "connectionType": "local",
     "dataSource": "push",
     "adminUI": {
       "config": "json"
     },
-    "main": "main.js"
+    "main": "main.js",
+    "blockly": true
   },
   "native": {
     "serverIp": "192.168.178.10",
