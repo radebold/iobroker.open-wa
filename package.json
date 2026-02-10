@@ -1,7 +1,7 @@
 {
   "name": "iobroker.open-wa",
-  "version": "0.1.0",
-  "description": "ioBroker adapter for an open-wa WhatsApp gateway",
+  "version": "0.2.0",
+  "description": "ioBroker adapter for open-wa WhatsApp gateway (text + images)",
   "main": "main.js",
   "author": "radebold",
   "license": "MIT",

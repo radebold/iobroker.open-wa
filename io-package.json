@@ -1,15 +1,15 @@
 {
   "common": {
     "name": "open-wa",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "title": "Open-WA WhatsApp Gateway",
     "titleLang": {
       "en": "Open-WA WhatsApp Gateway",
       "de": "Open-WA WhatsApp Gateway"
     },
     "desc": {
-      "en": "Send WhatsApp messages via an open-wa gateway",
-      "de": "WhatsApp Nachrichten über ein open-wa Gateway senden"
+      "en": "Send WhatsApp messages & images via open-wa gateway",
+      "de": "WhatsApp Nachrichten & Bilder über open-wa Gateway senden"
     },
     "authors": [
       "radebold <radebold@users.noreply.github.com>"
@@ -23,7 +23,9 @@
     "loglevel": "info",
     "connectionType": "local",
     "dataSource": "push",
-    "adminUI": { "config": "json" },
+    "adminUI": {
+      "config": "json"
+    },
     "main": "main.js",
     "blockly": true,
     "messagebox": true
