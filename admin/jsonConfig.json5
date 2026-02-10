@@ -3,7 +3,6 @@
   "type": "panel",
   "items": {
     "serverIp": { "type": "text", "label": "Server IP", "default": "192.168.178.10" },
-    "serverPort": { "type": "number", "label": "Server Port", "default": 3005 },
-    "pollIntervalSec": { "type": "number", "label": "Polling (sec)", "default": 60 }
+    "serverPort": { "type": "number", "label": "Server Port", "default": 3005 }
   }
 }

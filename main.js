@@ -22,14 +22,9 @@ class OpenWa extends utils.Adapter {
       native: {}
     });
 
-    await this.setObjectNotExistsAsync('info.connection', {
-      type: 'state',
-      common: { name: 'Connected', type: 'boolean', read: true, write: false },
-      native: {}
-    });
-
     const { serverIp, serverPort } = this.config;
     this.api = new OpenWaApi(`http://${serverIp}:${serverPort}`);
+
     this.subscribeStates('send.text');
   }
 
@@ -37,17 +32,16 @@ class OpenWa extends utils.Adapter {
     if (!state || state.ack) return;
 
     if (id.endsWith('send.text')) {
-      const text = state.val;
+      const text = String(state.val || '').trim();
       const to = (await this.getStateAsync('send.to'))?.val;
-      if (!to) return;
+
+      if (!text || !to) return;
 
       try {
         await this.api.sendText(to, text);
-        await this.setStateAsync('info.connection', true, true);
         await this.setStateAsync(id, state.val, true);
       } catch (e) {
-        this.log.error(e.message);
-        await this.setStateAsync('info.connection', false, true);
+        this.log.error(`Send failed: ${e.message}`);
       }
     }
   }

@@ -4,13 +4,11 @@
     "title": "Open-WA WhatsApp Gateway",
     "type": "messaging",
     "mode": "daemon",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "adminUI": { "config": "json" }
   },
   "native": {
     "serverIp": "192.168.178.10",
-    "serverPort": 3005,
-    "basePath": "",
-    "pollIntervalSec": 60
+    "serverPort": 3005
   }
 }
