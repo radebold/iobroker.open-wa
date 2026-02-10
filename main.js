@@ -65,27 +65,49 @@ class OpenWa extends utils.Adapter {
   async _send(to, content) {
     const msg = String(content ?? '').trim();
     const dest = String(to ?? '').trim();
+
     if (!msg) throw new Error('Empty message');
     if (!dest) throw new Error('Recipient missing');
+
     const res = await this.api.sendText(dest, msg);
     return res?.data ?? res;
   }
 
   async onMessage(obj) {
-    if (!obj || !obj.command) return;
+    try {
+      if (!obj) return;
 
-    if (obj.command === 'send') {
+      this.log.debug(`onMessage: command=${obj.command}, from=${obj.from}, hasCallback=${!!obj.callback}`);
+
+      if (obj.command !== 'send') return;
+
       const payload = obj.message || {};
       const content = payload.content ?? payload.text ?? '';
       const to = payload.to ?? payload.phone ?? '';
 
+      this.log.info(`sendTo(send): to="${to}" contentLen=${String(content).length}`);
+
       try {
         const result = await this._send(to, content);
-        if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, result }, obj.callback);
+
+        await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
+        await this.setStateAsync('send.lastError', '', true);
+        await this.setStateAsync('info.connection', true, true);
+
+        if (obj.callback) {
+          this.sendTo(obj.from, obj.command, { ok: true, result }, obj.callback);
+        }
       } catch (e) {
-        if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, error: e.message }, obj.callback);
+        await this.setStateAsync('send.lastError', e.message, true);
+        await this.setStateAsync('info.connection', false, true);
         this.log.error(`sendTo(send) failed: ${e.message}`);
+
+        if (obj.callback) {
+          this.sendTo(obj.from, obj.command, { ok: false, error: e.message }, obj.callback);
+        }
       }
+    } catch (e) {
+      this.log.error(`onMessage handler crashed: ${e.message}`);
     }
   }
 
