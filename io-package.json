@@ -1,14 +1,40 @@
 {
   "common": {
     "name": "open-wa",
+    "version": "0.0.5",
     "title": "Open-WA WhatsApp Gateway",
-    "type": "messaging",
+    "titleLang": {
+      "en": "Open-WA WhatsApp Gateway",
+      "de": "Open-WA WhatsApp Gateway"
+    },
+    "desc": {
+      "en": "Send WhatsApp messages via an open-wa gateway",
+      "de": "WhatsApp Nachrichten über ein open-wa Gateway senden"
+    },
+    "authors": [
+      "radebold <radebold@users.noreply.github.com>"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
     "mode": "daemon",
-    "version": "0.0.4",
-    "adminUI": { "config": "json" }
+    "type": "messaging",
+    "icon": "open-wa.png",
+    "extIcon": "https://raw.githubusercontent.com/radebold/iobroker.open-wa/master/admin/open-wa.png",
+    "enabled": true,
+    "readme": "https://github.com/radebold/iobroker.open-wa/blob/master/README.md",
+    "loglevel": "info",
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "main": "main.js"
   },
   "native": {
     "serverIp": "192.168.178.10",
-    "serverPort": 3005
-  }
+    "serverPort": 3005,
+    "basePath": ""
+  },
+  "objects": [],
+  "instanceObjects": []
 }

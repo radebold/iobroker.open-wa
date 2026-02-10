@@ -1,50 +1,110 @@
 'use strict';
+
 const utils = require('@iobroker/adapter-core');
 const OpenWaApi = require('./lib/api');
 
 class OpenWa extends utils.Adapter {
   constructor(options = {}) {
     super({ ...options, name: 'open-wa' });
+
     this.on('ready', this.onReady.bind(this));
     this.on('stateChange', this.onStateChange.bind(this));
+    this.on('unload', this.onUnload.bind(this));
+
+    this.api = null;
+    this.baseUrl = '';
   }
 
   async onReady() {
+    // create states (important for Blockly)
     await this.setObjectNotExistsAsync('send.to', {
       type: 'state',
-      common: { name: 'Recipient', type: 'string', read: true, write: true },
+      common: { name: 'Recipient (phone or chatId)', type: 'string', role: 'text', read: true, write: true },
       native: {}
     });
 
     await this.setObjectNotExistsAsync('send.text', {
       type: 'state',
-      common: { name: 'Message', type: 'string', read: true, write: true },
+      common: { name: 'Message text (write to send)', type: 'string', role: 'text', read: true, write: true },
       native: {}
     });
 
-    const { serverIp, serverPort } = this.config;
-    this.api = new OpenWaApi(`http://${serverIp}:${serverPort}`);
+    await this.setObjectNotExistsAsync('send.lastError', {
+      type: 'state',
+      common: { name: 'Last send error', type: 'string', role: 'text', read: true, write: false },
+      native: {}
+    });
+
+    await this.setObjectNotExistsAsync('send.lastResult', {
+      type: 'state',
+      common: { name: 'Last send result', type: 'string', role: 'json', read: true, write: false },
+      native: {}
+    });
+
+    await this.setObjectNotExistsAsync('info.connection', {
+      type: 'state',
+      common: { name: 'Connection', type: 'boolean', role: 'indicator.connected', read: true, write: false },
+      native: {}
+    });
 
     this.subscribeStates('send.text');
+
+    // build base url
+    const ip = this.config.serverIp;
+    const port = this.config.serverPort;
+    const basePath = (this.config.basePath || '').replace(/\/+$/, '');
+    this.baseUrl = `http://${ip}:${port}${basePath ? '/' + basePath.replace(/^\/+/, '') : ''}`;
+
+    this.log.info(`Using gateway: ${this.baseUrl}`);
+    this.api = new OpenWaApi(this.baseUrl);
+
+    // mark connected unknown until first send/ping
+    await this.setStateAsync('info.connection', true, true);
+  }
+
+  async onUnload(callback) {
+    try {
+      callback();
+    } catch {
+      callback();
+    }
   }
 
   async onStateChange(id, state) {
     if (!state || state.ack) return;
 
-    if (id.endsWith('send.text')) {
-      const text = String(state.val || '').trim();
-      const to = (await this.getStateAsync('send.to'))?.val;
+    const shortId = id.replace(this.namespace + '.', '');
 
-      if (!text || !to) return;
+    if (shortId === 'send.text') {
+      const content = String(state.val ?? '').trim();
+      const to = String((await this.getStateAsync('send.to'))?.val ?? '').trim();
+
+      if (!content) {
+        await this.setStateAsync('send.lastError', 'Empty message - not sent', true);
+        return;
+      }
+      if (!to) {
+        await this.setStateAsync('send.lastError', 'Recipient missing (send.to)', true);
+        return;
+      }
 
       try {
-        await this.api.sendText(to, text);
-        await this.setStateAsync(id, state.val, true);
+        const res = await this.api.sendText(to, content);
+        await this.setStateAsync('send.lastResult', JSON.stringify(res.data ?? res), true);
+        await this.setStateAsync('send.lastError', '', true);
+        await this.setStateAsync('info.connection', true, true);
+        await this.setStateAsync('send.text', state.val, true);
       } catch (e) {
+        await this.setStateAsync('send.lastError', e.message, true);
+        await this.setStateAsync('info.connection', false, true);
         this.log.error(`Send failed: ${e.message}`);
       }
     }
   }
 }
 
-module.exports = (options) => new OpenWa(options);
+if (module.parent) {
+  module.exports = (options) => new OpenWa(options);
+} else {
+  new OpenWa();
+}

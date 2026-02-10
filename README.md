@@ -1,21 +1,15 @@
 # ioBroker.open-wa
 
-ioBroker adapter to talk to an open-wa WhatsApp gateway (Swagger UI visible at `/api-docs`).
+Minimal ioBroker adapter to send WhatsApp messages via an open-wa gateway.
 
-## Config
-- Server IP
-- Server Port
-- Base path (optional)
-- API key (optional)
-- Poll interval
+## Usage (Blockly)
+1. Set `open-wa.0.send.to` to `+49...` or already to a chat id like `4917...@c.us` / group id `...@g.us`
+2. Write your message to `open-wa.0.send.text`
 
-## States
-- `send.to` (string): recipient number
-- `send.text` (string): write message text to send it to `send.to`
-- `send.lastResult` (json string): last send response
-- `send.lastError` (string): last send error
-- `info.connection` (boolean): gateway reachable
-- `status.lastCheck` (ISO string): last poll time
+The adapter converts phone numbers like `+491726361044` to `491726361044@c.us` automatically and sends:
 
-## Notes
-This is a minimal starting point. If your gateway expects different payload keys than `{ phone, message }` or different endpoints, adjust `lib/api.js`.
+```json
+{
+  "args": { "to": "491726361044@c.us", "content": "Hello" }
+}
+```
