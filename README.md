@@ -1,12 +1,6 @@
 # ioBroker.open-wa
 
 ## Blockly SendTo block
-This adapter provides a Blockly block in the **Sendto** category (like whatsapp-cmb/pushover).
+This adapter provides a Blockly block in the **Sendto** category.
 
-After installing/updating:
-- `iobroker upload open-wa`
-- restart `javascript.0`
-- reload Blockly (Ctrl+F5)
-
-The block uses:
-`sendTo("open-wa.X", "send", { to: "...", content: "..." })`
+If you see a JS compile error in javascript.0 after using the block, update to >= 0.0.9.
