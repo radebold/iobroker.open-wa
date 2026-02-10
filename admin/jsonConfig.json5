@@ -1,23 +1,56 @@
 {
   "i18n": true,
-  "type": "panel",
+  "type": "tabs",
   "items": {
-    "serverIp": {
-      "type": "text",
-      "label": "Server IP",
-      "default": "192.168.178.10"
+    "connection": {
+      "type": "panel",
+      "label": "Connection",
+      "items": {
+        "serverIp": {
+          "type": "text",
+          "label": "Server IP",
+          "sm": 6,
+          "default": "192.168.178.10"
+        },
+        "serverPort": {
+          "type": "number",
+          "label": "Server Port",
+          "sm": 6,
+          "default": 3005,
+          "min": 1,
+          "max": 65535
+        },
+        "basePath": {
+          "type": "text",
+          "label": "Base path (optional)",
+          "sm": 12,
+          "default": ""
+        },
+        "apiKey": {
+          "type": "text",
+          "label": "API key (optional)",
+          "sm": 12,
+          "default": ""
+        },
+        "pollIntervalSec": {
+          "type": "number",
+          "label": "Polling interval (seconds)",
+          "sm": 12,
+          "default": 60,
+          "min": 10,
+          "max": 3600
+        }
+      }
     },
-    "serverPort": {
-      "type": "number",
-      "label": "Server Port",
-      "default": 3005,
-      "min": 1,
-      "max": 65535
-    },
-    "basePath": {
-      "type": "text",
-      "label": "Base path (optional)",
-      "default": ""
+    "usage": {
+      "type": "panel",
+      "label": "Usage",
+      "items": {
+        "_hint1": {
+          "type": "staticText",
+          "text": "States: open-wa.X.send.to (number), open-wa.X.send.text (message). Write send.text to send to the number in send.to."
+        }
+      }
     }
   }
 }
