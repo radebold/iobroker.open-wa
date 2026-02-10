@@ -2,34 +2,15 @@
   "common": {
     "name": "open-wa",
     "title": "Open-WA WhatsApp Gateway",
-    "desc": {
-      "en": "Connects ioBroker to an open-wa WhatsApp gateway",
-      "de": "Verbindet ioBroker mit einem open-wa WhatsApp Gateway"
-    },
-    "version": "0.0.2",
-    "news": {
-      "0.0.2": {
-        "en": "Add send states and polling of gateway status",
-        "de": "Sende-States und Status-Polling hinzugefügt"
-      },
-      "0.0.1": {
-        "en": "Initial version",
-        "de": "Erste Version"
-      }
-    },
-    "mode": "daemon",
     "type": "messaging",
-    "adminUI": { "config": "json" },
-    "icon": "open-wa.png",
-    "loglevel": "info"
+    "mode": "daemon",
+    "version": "0.0.3",
+    "adminUI": { "config": "json" }
   },
   "native": {
     "serverIp": "192.168.178.10",
     "serverPort": 3005,
     "basePath": "",
-    "pollIntervalSec": 60,
-    "apiKey": ""
-  },
-  "objects": [],
-  "instanceObjects": []
+    "pollIntervalSec": 60
+  }
 }
