@@ -1,9 +1,12 @@
 # ioBroker.open-wa
 
-Adapter to send WhatsApp messages via an open-wa gateway.
+## Blockly SendTo block
+This adapter provides a Blockly block in the **Sendto** category (like whatsapp-cmb/pushover).
 
-## Custom Blockly block (safe)
-This adapter ships `admin/blockly.js`.
-After installing/updating: restart **javascript.0** once so Blockly reloads custom blocks.
+After installing/updating:
+- `iobroker upload open-wa`
+- restart `javascript.0`
+- reload Blockly (Ctrl+F5)
 
-If Blockly ever becomes empty: rename `admin/blockly.js` to disable the custom block and reload Blockly.
+The block uses:
+`sendTo("open-wa.X", "send", { to: "...", content: "..." })`

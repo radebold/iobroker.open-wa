@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "open-wa",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "title": "Open-WA WhatsApp Gateway",
     "titleLang": {
       "en": "Open-WA WhatsApp Gateway",
