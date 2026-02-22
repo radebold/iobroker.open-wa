@@ -1,19 +1,14 @@
 {
   "common": {
     "name": "open-wa",
-    "version": "0.2.0",
+    "version": "0.3.1",
     "title": "Open-WA WhatsApp Gateway",
-    "titleLang": {
-      "en": "Open-WA WhatsApp Gateway",
-      "de": "Open-WA WhatsApp Gateway"
-    },
+    "titleLang": { "en": "Open-WA WhatsApp Gateway", "de": "Open-WA WhatsApp Gateway" },
     "desc": {
-      "en": "Send WhatsApp messages & images via open-wa gateway",
-      "de": "WhatsApp Nachrichten & Bilder über open-wa Gateway senden"
+      "en": "Send WhatsApp messages via gateway /send (Bearer token)",
+      "de": "WhatsApp Nachrichten über Gateway /send (Bearer Token) senden"
     },
-    "authors": [
-      "radebold <radebold@users.noreply.github.com>"
-    ],
+    "authors": ["radebold <radebold@users.noreply.github.com>"],
     "license": "MIT",
     "platform": "Javascript/Node.js",
     "mode": "daemon",
@@ -23,18 +18,12 @@
     "loglevel": "info",
     "connectionType": "local",
     "dataSource": "push",
-    "adminUI": {
-      "config": "json"
-    },
+    "adminUI": { "config": "json" },
     "main": "main.js",
     "blockly": true,
     "messagebox": true
   },
-  "native": {
-    "serverIp": "192.168.178.10",
-    "serverPort": 3005,
-    "basePath": ""
-  },
+  "native": { "serverIp": "192.168.178.10", "serverPort": 3020, "token": "" },
   "objects": [],
   "instanceObjects": []
 }

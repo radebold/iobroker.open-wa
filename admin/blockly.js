@@ -3,17 +3,16 @@
 /* global Blockly, systemLang, main */
 
 try {
-    // ---------- TEXT (send) ----------
-    Blockly.Words['open-wa']               = {'en': 'Open-WA', 'de': 'Open-WA'};
-    Blockly.Words['open-wa_message']       = {'en': 'message', 'de': 'Meldung'};
-    Blockly.Words['open-wa_to']            = {'en': 'Recipient (optional)', 'de': 'Empfänger (optional)'};
-    Blockly.Words['open-wa_tooltip']       = {'en': 'Send WhatsApp message via open-wa gateway', 'de': 'WhatsApp Nachricht über open-wa Gateway senden'};
-    Blockly.Words['open-wa_log']           = {'en': 'log level', 'de': 'Loglevel'};
-    Blockly.Words['open-wa_log_none']      = {'en': 'none', 'de': 'keins'};
-    Blockly.Words['open-wa_log_info']      = {'en': 'info', 'de': 'info'};
-    Blockly.Words['open-wa_log_debug']     = {'en': 'debug', 'de': 'debug'};
-    Blockly.Words['open-wa_log_warn']      = {'en': 'warning', 'de': 'warning'};
-    Blockly.Words['open-wa_log_error']     = {'en': 'error', 'de': 'error'};
+    Blockly.Words['open-wa']            = {'en': 'Open-WA', 'de': 'Open-WA'};
+    Blockly.Words['open-wa_message']    = {'en': 'text', 'de': 'Text'};
+    Blockly.Words['open-wa_to']         = {'en': 'to', 'de': 'Empfänger'};
+    Blockly.Words['open-wa_result']     = {'en': 'result state id', 'de': 'Ergebnis-State-ID'};
+    Blockly.Words['open-wa_log']        = {'en': 'log level', 'de': 'Loglevel'};
+    Blockly.Words['open-wa_log_none']   = {'en': 'none', 'de': 'keins'};
+    Blockly.Words['open-wa_log_info']   = {'en': 'info', 'de': 'info'};
+    Blockly.Words['open-wa_log_debug']  = {'en': 'debug', 'de': 'debug'};
+    Blockly.Words['open-wa_log_warn']   = {'en': 'warning', 'de': 'warning'};
+    Blockly.Words['open-wa_log_error']  = {'en': 'error', 'de': 'error'};
 
     function getInstanceOptions() {
         var options = [];
@@ -30,14 +29,23 @@ try {
         return options;
     }
 
+    function logDropdown() {
+        return new Blockly.FieldDropdown([
+            [Blockly.Words['open-wa_log_none'][systemLang]  || Blockly.Words['open-wa_log_none'].en,  ''],
+            [Blockly.Words['open-wa_log_info'][systemLang]  || Blockly.Words['open-wa_log_info'].en,  'log'],
+            [Blockly.Words['open-wa_log_debug'][systemLang] || Blockly.Words['open-wa_log_debug'].en, 'debug'],
+            [Blockly.Words['open-wa_log_warn'][systemLang]  || Blockly.Words['open-wa_log_warn'].en,  'warn'],
+            [Blockly.Words['open-wa_log_error'][systemLang] || Blockly.Words['open-wa_log_error'].en, 'error']
+        ]);
+    }
+
+    // ---- send (no result) ----
     Blockly.Sendto.blocks['open-wa'] =
         '<block type="open-wa">'
-        + '     <value name="INSTANCE"></value>'
-        + '     <value name="MESSAGE">'
-        + '         <shadow type="text"><field name="TEXT">text</field></shadow>'
-        + '     </value>'
-        + '     <value name="TO"></value>'
-        + '     <value name="LOG"></value>'
+        + '  <value name="INSTANCE"></value>'
+        + '  <value name="TO"><shadow type="text"><field name="TEXT">+491701234567</field></shadow></value>'
+        + '  <value name="TEXT"><shadow type="text"><field name="TEXT">Gateway läuft sauber 🚀</field></shadow></value>'
+        + '  <value name="LOG"></value>'
         + '</block>';
 
     Blockly.Blocks['open-wa'] = {
@@ -46,121 +54,75 @@ try {
                 .appendField(Blockly.Words['open-wa'][systemLang] || Blockly.Words['open-wa'].en)
                 .appendField(new Blockly.FieldDropdown(getInstanceOptions), 'INSTANCE');
 
-            this.appendValueInput('MESSAGE')
-                .appendField(Blockly.Words['open-wa_message'][systemLang] || Blockly.Words['open-wa_message'].en);
-
-            var input = this.appendValueInput('TO')
-                .setCheck('String')
+            this.appendValueInput('TO').setCheck('String')
                 .appendField(Blockly.Words['open-wa_to'][systemLang] || Blockly.Words['open-wa_to'].en);
+
+            this.appendValueInput('TEXT')
+                .appendField(Blockly.Words['open-wa_message'][systemLang] || Blockly.Words['open-wa_message'].en);
 
             this.appendDummyInput('LOG')
                 .appendField(Blockly.Words['open-wa_log'][systemLang] || Blockly.Words['open-wa_log'].en)
-                .appendField(new Blockly.FieldDropdown([
-                    [Blockly.Words['open-wa_log_none'][systemLang]  || Blockly.Words['open-wa_log_none'].en,  ''],
-                    [Blockly.Words['open-wa_log_info'][systemLang]  || Blockly.Words['open-wa_log_info'].en,  'log'],
-                    [Blockly.Words['open-wa_log_debug'][systemLang] || Blockly.Words['open-wa_log_debug'].en, 'debug'],
-                    [Blockly.Words['open-wa_log_warn'][systemLang]  || Blockly.Words['open-wa_log_warn'].en,  'warn'],
-                    [Blockly.Words['open-wa_log_error'][systemLang] || Blockly.Words['open-wa_log_error'].en, 'error']
-                ]), 'LOG');
+                .appendField(logDropdown(), 'LOG');
 
-            if (input.connection) input.connection._optional = true;
-
-            this.setInputsInline(false);
-            this.setPreviousStatement(true, null);
-            this.setNextStatement(true, null);
-
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
             this.setColour(Blockly.Sendto.HUE);
-            this.setTooltip(Blockly.Words['open-wa_tooltip'][systemLang] || Blockly.Words['open-wa_tooltip'].en);
         }
     };
 
     Blockly.JavaScript['open-wa'] = function(block) {
-        var dropdown_instance = block.getFieldValue('INSTANCE'); // like ".0"
+        var inst = block.getFieldValue('INSTANCE');
         var logLevel = block.getFieldValue('LOG');
-        var value_message = Blockly.JavaScript.valueToCode(block, 'MESSAGE', Blockly.JavaScript.ORDER_ATOMIC);
-        var value_to = Blockly.JavaScript.valueToCode(block, 'TO', Blockly.JavaScript.ORDER_ATOMIC);
+        var to = Blockly.JavaScript.valueToCode(block, 'TO', Blockly.JavaScript.ORDER_ATOMIC);
+        var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
 
         var logText = '';
-        if (logLevel) {
-            logText =
-                'console.' + logLevel + '("open-wa' +
-                (value_to ? '[' + value_to + ']' : '') +
-                ': " + ' + value_message + ');\n';
-        }
+        if (logLevel) logText = 'console.' + logLevel + '("open-wa: " + ' + text + ');\n';
 
-        return 'sendTo("open-wa' + dropdown_instance + '", "send", {\n    content: ' +
-            value_message + (value_to ? ',\n    to: ' + value_to : '') +
-            '\n});\n' + logText;
+        return 'sendTo("open-wa' + inst + '", "send", {\n    to: ' + to + ',\n    text: ' + text + '\n});\n' + logText;
     };
 
-    // ---------- IMAGE (sendImage) ----------
-    Blockly.Words['open-wa_image']         = {'en': 'send image', 'de': 'Bild senden'};
-    Blockly.Words['open-wa_file']          = {'en': 'file path / url', 'de': 'Datei (Pfad/URL)'};
-    Blockly.Words['open-wa_filename']      = {'en': 'filename', 'de': 'Dateiname'};
-    Blockly.Words['open-wa_caption']       = {'en': 'caption', 'de': 'Text (Caption)'};
-    Blockly.Words['open-wa_image_tooltip'] = {'en': 'Send image via /sendImage', 'de': 'Bild über /sendImage senden'};
-
-    Blockly.Sendto.blocks['open-wa-image'] =
-        '<block type="open-wa-image">'
-        + '     <value name="INSTANCE"></value>'
-        + '     <value name="TO"></value>'
-        + '     <value name="FILE">'
-        + '         <shadow type="text"><field name="TEXT">/opt/iobroker/iobroker-data/files/test.jpg</field></shadow>'
-        + '     </value>'
-        + '     <value name="FILENAME">'
-        + '         <shadow type="text"><field name="TEXT">test.jpg</field></shadow>'
-        + '     </value>'
-        + '     <value name="CAPTION">'
-        + '         <shadow type="text"><field name="TEXT"></field></shadow>'
-        + '     </value>'
+    // ---- send (with result) ----
+    Blockly.Sendto.blocks['open-wa-result'] =
+        '<block type="open-wa-result">'
+        + '  <value name="INSTANCE"></value>'
+        + '  <value name="TO"><shadow type="text"><field name="TEXT">+491701234567</field></shadow></value>'
+        + '  <value name="TEXT"><shadow type="text"><field name="TEXT">Gateway läuft sauber 🚀</field></shadow></value>'
+        + '  <value name="RESULT"><shadow type="text"><field name="TEXT">0_userdata.0.openwa.lastCallback</field></shadow></value>'
         + '</block>';
 
-    Blockly.Blocks['open-wa-image'] = {
+    Blockly.Blocks['open-wa-result'] = {
         init: function() {
             this.appendDummyInput('INSTANCE')
                 .appendField(Blockly.Words['open-wa'][systemLang] || Blockly.Words['open-wa'].en)
-                .appendField(Blockly.Words['open-wa_image'][systemLang] || Blockly.Words['open-wa_image'].en)
+                .appendField('(result)')
                 .appendField(new Blockly.FieldDropdown(getInstanceOptions), 'INSTANCE');
 
-            var inputTo = this.appendValueInput('TO')
-                .setCheck('String')
+            this.appendValueInput('TO').setCheck('String')
                 .appendField(Blockly.Words['open-wa_to'][systemLang] || Blockly.Words['open-wa_to'].en);
 
-            if (inputTo.connection) inputTo.connection._optional = true;
+            this.appendValueInput('TEXT')
+                .appendField(Blockly.Words['open-wa_message'][systemLang] || Blockly.Words['open-wa_message'].en);
 
-            this.appendValueInput('FILE')
-                .setCheck('String')
-                .appendField(Blockly.Words['open-wa_file'][systemLang] || Blockly.Words['open-wa_file'].en);
+            this.appendValueInput('RESULT').setCheck('String')
+                .appendField(Blockly.Words['open-wa_result'][systemLang] || Blockly.Words['open-wa_result'].en);
 
-            this.appendValueInput('FILENAME')
-                .setCheck('String')
-                .appendField(Blockly.Words['open-wa_filename'][systemLang] || Blockly.Words['open-wa_filename'].en);
-
-            this.appendValueInput('CAPTION')
-                .setCheck('String')
-                .appendField(Blockly.Words['open-wa_caption'][systemLang] || Blockly.Words['open-wa_caption'].en);
-
-            this.setInputsInline(false);
-            this.setPreviousStatement(true, null);
-            this.setNextStatement(true, null);
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
             this.setColour(Blockly.Sendto.HUE);
-            this.setTooltip(Blockly.Words['open-wa_image_tooltip'][systemLang] || Blockly.Words['open-wa_image_tooltip'].en);
         }
     };
 
-    Blockly.JavaScript['open-wa-image'] = function(block) {
-        var dropdown_instance = block.getFieldValue('INSTANCE');
-        var value_to = Blockly.JavaScript.valueToCode(block, 'TO', Blockly.JavaScript.ORDER_ATOMIC);
-        var value_file = Blockly.JavaScript.valueToCode(block, 'FILE', Blockly.JavaScript.ORDER_ATOMIC);
-        var value_filename = Blockly.JavaScript.valueToCode(block, 'FILENAME', Blockly.JavaScript.ORDER_ATOMIC);
-        var value_caption = Blockly.JavaScript.valueToCode(block, 'CAPTION', Blockly.JavaScript.ORDER_ATOMIC);
+    Blockly.JavaScript['open-wa-result'] = function(block) {
+        var inst = block.getFieldValue('INSTANCE');
+        var to = Blockly.JavaScript.valueToCode(block, 'TO', Blockly.JavaScript.ORDER_ATOMIC);
+        var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_ATOMIC);
+        var resultId = Blockly.JavaScript.valueToCode(block, 'RESULT', Blockly.JavaScript.ORDER_ATOMIC);
 
-        return 'sendTo("open-wa' + dropdown_instance + '", "sendImage", {\n' +
-            (value_to ? '    to: ' + value_to + ',\n' : '') +
-            '    file: ' + value_file + ',\n' +
-            '    filename: ' + value_filename + ',\n' +
-            '    caption: ' + value_caption + '\n' +
-            '});\n';
+        return 'sendTo("open-wa' + inst + '", "send", {\n    to: ' + to + ',\n    text: ' + text + '\n}, function(res){\n' +
+               '  var __rid = ' + resultId + ';\n' +
+               '  if (__rid) setState(__rid, JSON.stringify(res));\n' +
+               '});\n';
     };
 } catch (e) {
     if (typeof console !== 'undefined') console.error('open-wa blockly.js error', e);

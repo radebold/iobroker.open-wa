@@ -3,7 +3,7 @@
   "type": "panel",
   "items": {
     "serverIp": { "type": "text", "label": "Server IP", "default": "192.168.178.10", "sm": 6 },
-    "serverPort": { "type": "number", "label": "Server Port", "default": 3005, "min": 1, "max": 65535, "sm": 6 },
-    "basePath": { "type": "text", "label": "Base path (optional)", "default": "", "sm": 12 }
+    "serverPort": { "type": "number", "label": "Server Port", "default": 3020, "min": 1, "max": 65535, "sm": 6 },
+    "token": { "type": "password", "label": "Bearer Token", "default": "", "sm": 12 }
   }
 }

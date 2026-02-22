@@ -16,10 +16,9 @@ class OpenWa extends utils.Adapter {
   }
 
   async onReady() {
-    // States for quick/manual testing (optional)
     await this.setObjectNotExistsAsync('send.to', {
       type: 'state',
-      common: { name: 'Recipient (phone or chatId)', type: 'string', role: 'text', read: true, write: true },
+      common: { name: 'Recipient (phone number)', type: 'string', role: 'text', read: true, write: true },
       native: {}
     });
     await this.setObjectNotExistsAsync('send.text', {
@@ -47,11 +46,14 @@ class OpenWa extends utils.Adapter {
 
     const ip = this.config.serverIp;
     const port = this.config.serverPort;
-    const basePath = (this.config.basePath || '').replace(/\/+$/, '');
-    const url = `http://${ip}:${port}${basePath ? '/' + basePath.replace(/^\/+/, '') : ''}`;
+    const url = `http://${ip}:${port}`;
 
     this.log.info(`Using gateway: ${url}`);
-    this.api = new OpenWaApi(url);
+    if (!String(this.config.token || '').trim()) {
+      this.log.warn('No Bearer token configured (adapter config: token). Requests may be rejected.');
+    }
+
+    this.api = new OpenWaApi(url, this.config.token);
     await this.setStateAsync('info.connection', true, true);
   }
 
@@ -59,91 +61,49 @@ class OpenWa extends utils.Adapter {
     try { callback(); } catch { callback(); }
   }
 
-  async _sendText(to, content) {
-    const msg = String(content ?? '').trim();
+  async _sendText(to, text) {
+    const msg = String(text ?? '').trim();
     const dest = String(to ?? '').trim();
     if (!msg) throw new Error('Empty message');
     if (!dest) throw new Error('Recipient missing');
+
     const res = await this.api.sendText(dest, msg);
     return res?.data ?? res;
   }
 
-  async _sendImage(payload) {
-    const to = String(payload?.to ?? '').trim();
-    const file = payload?.file;
-    const filename = payload?.filename;
-    const caption = payload?.caption;
-
-    if (!to) throw new Error('Recipient missing');
-    if (!file) throw new Error('File missing');
-    if (!filename) throw new Error('Filename missing');
-
-    // pass through optional fields (only if defined)
-    const opts = {};
-    const optKeys = ['quotedMsgId','waitForId','ptt','withoutPreview','hideTags','viewOnce','requestConfig'];
-    for (const k of optKeys) {
-      if (payload[k] !== undefined) opts[k] = payload[k];
-    }
-
-    const res = await this.api.sendImage(to, file, filename, caption, opts);
-    return res?.data ?? res;
-  }
-
   async onMessage(obj) {
+    if (!obj || !obj.command) return;
+    if (obj.command !== 'send') return;
+
+    const p = obj.message || {};
+    const to = p.to ?? p.phone ?? '';
+    const text = p.text ?? p.content ?? p.message ?? '';
+
     try {
-      if (!obj || !obj.command) return;
+      const result = await this._sendText(to, text);
+      await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
+      await this.setStateAsync('send.lastError', '', true);
+      await this.setStateAsync('info.connection', true, true);
 
-      if (obj.command === 'send') {
-        const p = obj.message || {};
-        const content = p.content ?? p.text ?? '';
-        const to = p.to ?? p.phone ?? '';
-        try {
-          const result = await this._sendText(to, content);
-          await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
-          await this.setStateAsync('send.lastError', '', true);
-          await this.setStateAsync('info.connection', true, true);
-          if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, result }, obj.callback);
-        } catch (e) {
-          await this.setStateAsync('send.lastError', e.message, true);
-          await this.setStateAsync('info.connection', false, true);
-          this.log.error(`sendTo(send) failed: ${e.message}`);
-          if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, error: e.message }, obj.callback);
-        }
-        return;
-      }
-
-      if (obj.command === 'sendImage') {
-        const p = obj.message || {};
-        try {
-          const result = await this._sendImage(p);
-          await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
-          await this.setStateAsync('send.lastError', '', true);
-          await this.setStateAsync('info.connection', true, true);
-          if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, result }, obj.callback);
-        } catch (e) {
-          await this.setStateAsync('send.lastError', e.message, true);
-          await this.setStateAsync('info.connection', false, true);
-          this.log.error(`sendTo(sendImage) failed: ${e.message}`);
-          if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, error: e.message }, obj.callback);
-        }
-        return;
-      }
+      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, result }, obj.callback);
     } catch (e) {
-      this.log.error(`onMessage handler crashed: ${e.message}`);
+      await this.setStateAsync('send.lastError', e.message, true);
+      await this.setStateAsync('info.connection', false, true);
+      this.log.error(`send failed: ${e.message}`);
+      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, error: e.message }, obj.callback);
     }
   }
 
   async onStateChange(id, state) {
     if (!state || state.ack) return;
-
     const shortId = id.replace(this.namespace + '.', '');
     if (shortId !== 'send.text') return;
 
-    const content = String(state.val ?? '').trim();
+    const text = String(state.val ?? '').trim();
     const to = String((await this.getStateAsync('send.to'))?.val ?? '').trim();
 
     try {
-      const result = await this._sendText(to, content);
+      const result = await this._sendText(to, text);
       await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
       await this.setStateAsync('send.lastError', '', true);
       await this.setStateAsync('info.connection', true, true);
