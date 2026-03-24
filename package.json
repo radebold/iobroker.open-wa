@@ -1,11 +1,16 @@
 {
   "name": "iobroker.open-wa",
-  "version": "0.3.1",
-  "description": "ioBroker adapter for WhatsApp gateway /send (Bearer token)",
+  "version": "0.3.2",
+  "description": "ioBroker adapter for WhatsApp gateway /sendText (Bearer token, group support)",
   "main": "main.js",
   "author": "radebold",
   "license": "MIT",
-  "keywords": ["iobroker", "adapter", "whatsapp", "open-wa"],
+  "keywords": [
+    "iobroker",
+    "adapter",
+    "whatsapp",
+    "open-wa"
+  ],
   "dependencies": {
     "@iobroker/adapter-core": "^3.1.0",
     "axios": "^1.6.0"

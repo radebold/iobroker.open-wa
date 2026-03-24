@@ -18,7 +18,7 @@ class OpenWa extends utils.Adapter {
   async onReady() {
     await this.setObjectNotExistsAsync('send.to', {
       type: 'state',
-      common: { name: 'Recipient (phone number)', type: 'string', role: 'text', read: true, write: true },
+      common: { name: 'Recipient (phone number or WhatsApp group JID)', type: 'string', role: 'text', read: true, write: true },
       native: {}
     });
     await this.setObjectNotExistsAsync('send.text', {
@@ -67,6 +67,7 @@ class OpenWa extends utils.Adapter {
     if (!msg) throw new Error('Empty message');
     if (!dest) throw new Error('Recipient missing');
 
+    this.log.info(`Sending WhatsApp message to: ${dest}`);
     const res = await this.api.sendText(dest, msg);
     return res?.data ?? res;
   }
