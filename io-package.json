@@ -1,15 +1,15 @@
 {
   "common": {
     "name": "open-wa",
-    "version": "0.3.3",
+    "version": "0.3.4",
     "title": "Open-WA WhatsApp Gateway",
     "titleLang": {
       "en": "Open-WA WhatsApp Gateway",
       "de": "Open-WA WhatsApp Gateway"
     },
     "desc": {
-      "en": "Send WhatsApp messages via gateway /sendText (Bearer token, Admin UI test button)",
-      "de": "WhatsApp-Nachrichten über Gateway /sendText senden (Bearer Token, Test-Button in der Admin UI)"
+      "en": "Send WhatsApp messages via gateway /sendText (Bearer token, group support, Admin UI test button, improved callback handling)",
+      "de": "WhatsApp-Nachrichten über Gateway /sendText senden (Bearer Token, Gruppen-Support, Test-Button in der Admin UI, verbessertes Callback-Handling)"
     },
     "authors": [
       "radebold <radebold@users.noreply.github.com>"
@@ -30,8 +30,8 @@
     "blockly": true,
     "messagebox": true,
     "news": {
-      "en": "0.3.3 Added an Admin UI test tab with direct WhatsApp test send button.",
-      "de": "0.3.3 Admin-UI um einen Test-Reiter mit direktem WhatsApp-Testversand erweitert."
+      "en": "0.3.4 Improved Admin UI test callback handling, group-safe recipient normalization, and consistent gateway send behavior.",
+      "de": "0.3.4 Verbessertes Callback-Handling für den Admin-UI-Test, gruppensichere Empfänger-Normalisierung und konsistentes Gateway-Sendeverhalten."
     }
   },
   "native": {
@@ -41,5 +41,5 @@
   },
   "objects": [],
   "instanceObjects": [],
-  "version": "0.3.3"
+  "version": "0.3.4"
 }

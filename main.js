@@ -94,6 +94,7 @@ class OpenWa extends utils.Adapter {
 
       if (obj.callback) {
         this.sendTo(obj.from, obj.command, {
+          success: true,
           ok: true,
           sent: true,
           result,
@@ -106,6 +107,7 @@ class OpenWa extends utils.Adapter {
       this.log.error(`${obj.command} failed: ${e.message}`);
       if (obj.callback) {
         this.sendTo(obj.from, obj.command, {
+          success: false,
           ok: false,
           error: e.message,
           message: `WhatsApp test failed: ${e.message}`,
