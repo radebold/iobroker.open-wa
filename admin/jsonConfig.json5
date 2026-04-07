@@ -1,50 +1,50 @@
 {
-  "i18n": true,
-  "type": "tabs",
-  "items": {
-    "mainTab": {
-      "type": "panel",
-      "label": "Gateway",
-      "items": {
-        "serverIp": { "type": "text", "label": "Server IP", "default": "192.168.178.10", "sm": 6 },
-        "serverPort": { "type": "number", "label": "Server Port", "default": 3020, "min": 1, "max": 65535, "sm": 6 },
-        "token": { "type": "password", "label": "Bearer Token", "default": "", "sm": 12 }
+  i18n: true,
+  type: 'tabs',
+  items: {
+    mainTab: {
+      type: 'panel',
+      label: 'Gateway',
+      items: {
+        serverIp: { type: 'text', label: 'Server IP', default: '192.168.178.10', sm: 6 },
+        serverPort: { type: 'number', label: 'Server Port', default: 3020, min: 1, max: 65535, sm: 6 },
+        token: { type: 'password', label: 'Bearer Token', default: '', sm: 12 }
       }
     },
-    "testTab": {
-      "type": "panel",
-      "label": "Test",
-      "items": {
-        "_testInfo": {
-          "type": "staticText",
-          "text": "Send a test WhatsApp message directly from the Admin UI. Use a phone number like +49179... or a group JID like 1203...@g.us.",
-          "sm": 12
+    testTab: {
+      type: 'panel',
+      label: 'Test',
+      items: {
+        _testInfo: {
+          type: 'staticText',
+          text: 'Send a test WhatsApp message directly from the Admin UI. Use a phone number like +49179... or a group JID like 1203...@g.us.',
+          sm: 12
         },
-        "_testTo": {
-          "type": "text",
-          "label": "Test recipient",
-          "placeholder": "+49179... or 1203...@g.us",
-          "sm": 12,
-          "doNotSave": true
+        _testTo: {
+          type: 'text',
+          label: 'Test recipient',
+          placeholder: '+49179... or 1203...@g.us',
+          sm: 12,
+          doNotSave: true
         },
-        "_testText": {
-          "type": "text",
-          "label": "Test message",
-          "placeholder": "Test from Admin UI",
-          "default": "Test from Admin UI",
-          "sm": 12,
-          "doNotSave": true
+        _testText: {
+          type: 'text',
+          label: 'Test message',
+          placeholder: 'Test from Admin UI',
+          default: 'Test from Admin UI',
+          sm: 12,
+          doNotSave: true
         },
-        "_testSend": {
-          "type": "sendTo",
-          "label": "Send test message",
-          "command": "test",
-          "icon": "send",
-          "variant": "contained",
-          "showProcess": true,
-          "timeout": 30000,
-          "jsonData": "{"to":"${data._testTo}","text":"${data._testText}"}",
-          "sm": 12
+        _testSend: {
+          type: 'sendTo',
+          label: 'Send test message',
+          command: 'test',
+          icon: 'send',
+          variant: 'contained',
+          showProcess: true,
+          timeout: 30000,
+          jsonData: '{"to":"${data._testTo}","text":"${data._testText}"}',
+          sm: 12
         }
       }
     }

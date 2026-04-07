@@ -55,21 +55,45 @@ class OpenWa extends utils.Adapter {
 
     this.api = new OpenWaApi(url, this.config.token);
     await this.setStateAsync('info.connection', true, true);
+    await this.setStateAsync('send.lastError', '', true);
+    this.log.debug('Adapter ready. Commands supported: send, test');
   }
 
   async onUnload(callback) {
     try { callback(); } catch { callback(); }
   }
 
-  async _sendText(to, text) {
+  maskRecipient(to) {
+    const dest = String(to ?? '').trim();
+    if (!dest) return '';
+    if (dest.endsWith('@g.us')) return dest;
+    if (dest.endsWith('@c.us')) return dest.replace(/^(\d{3})\d+(?=@c\.us$)/, '$1***');
+    if (dest.startsWith('+')) return dest.replace(/^(\+\d{3})\d+$/, '$1***');
+    return dest.replace(/^(\d{3})\d+$/, '$1***');
+  }
+
+  async _sendText(to, text, source = 'unknown') {
     const msg = String(text ?? '').trim();
     const dest = String(to ?? '').trim();
     if (!msg) throw new Error('Empty message');
     if (!dest) throw new Error('Recipient missing');
 
-    this.log.info(`Sending WhatsApp message to: ${dest}`);
+    const maskedDest = this.maskRecipient(dest);
+    this.log.info(`Sending WhatsApp message (${source}) to: ${maskedDest}`);
+    this.log.debug(`Outgoing payload (${source}): ${JSON.stringify({ to: dest, text: msg })}`);
+
     const res = await this.api.sendText(dest, msg);
-    return res?.data ?? res;
+    const data = res?.data ?? res;
+
+    this.log.debug(`Gateway response (${source}): ${JSON.stringify(data)}`);
+
+    if (data && data.success === false) {
+      const responseText = typeof data.response !== 'undefined' ? String(data.response) : '';
+      const errorText = typeof data.error !== 'undefined' ? String(data.error) : '';
+      throw new Error(errorText || responseText || 'Gateway returned success=false');
+    }
+
+    return data;
   }
 
   async onMessage(obj) {
@@ -81,17 +105,22 @@ class OpenWa extends utils.Adapter {
     const text = p.text ?? p.content ?? p.message ?? '';
 
     try {
-      const result = await this._sendText(to, text);
+      const result = await this._sendText(to, text, `command:${obj.command}`);
       await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
       await this.setStateAsync('send.lastError', '', true);
       await this.setStateAsync('info.connection', true, true);
 
-      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, success: true, result }, obj.callback);
+      if (obj.callback) {
+        this.sendTo(obj.from, obj.command, { ok: true, success: true, result }, obj.callback);
+      }
     } catch (e) {
-      await this.setStateAsync('send.lastError', e.message || String(e), true);
+      const err = e?.message || String(e);
+      await this.setStateAsync('send.lastError', err, true);
       await this.setStateAsync('info.connection', false, true);
-      this.log.error(`${obj.command} failed: ${e.message || String(e)}`);
-      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, success: false, error: e.message || String(e) }, obj.callback);
+      this.log.error(`${obj.command} failed: ${err}`);
+      if (obj.callback) {
+        this.sendTo(obj.from, obj.command, { ok: false, success: false, error: err }, obj.callback);
+      }
     }
   }
 
@@ -104,15 +133,16 @@ class OpenWa extends utils.Adapter {
     const to = String((await this.getStateAsync('send.to'))?.val ?? '').trim();
 
     try {
-      const result = await this._sendText(to, text);
+      const result = await this._sendText(to, text, 'state:send.text');
       await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
       await this.setStateAsync('send.lastError', '', true);
       await this.setStateAsync('info.connection', true, true);
       await this.setStateAsync('send.text', state.val, true);
     } catch (e) {
-      await this.setStateAsync('send.lastError', e.message || String(e), true);
+      const err = e?.message || String(e);
+      await this.setStateAsync('send.lastError', err, true);
       await this.setStateAsync('info.connection', false, true);
-      this.log.error(`Send failed: ${e.message}`);
+      this.log.error(`Send failed: ${err}`);
     }
   }
 }

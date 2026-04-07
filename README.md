@@ -22,3 +22,8 @@ The adapter includes a test tab in the Admin UI. The test button sends the curre
 Sendto blocks:
 - Open-WA
 - Open-WA (result) -> stores callback JSON into a state id you provide
+
+
+## 0.3.6
+- Fixed Admin UI jsonConfig parsing for the Test tab.
+- Improved adapter logging for send/test requests and gateway responses.
