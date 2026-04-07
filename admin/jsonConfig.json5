@@ -24,14 +24,16 @@
           "type": "text",
           "label": "Test recipient",
           "placeholder": "+49179... or 1203...@g.us",
-          "sm": 12
+          "sm": 12,
+          "doNotSave": true
         },
         "_testText": {
           "type": "text",
           "label": "Test message",
           "placeholder": "Test from Admin UI",
           "default": "Test from Admin UI",
-          "sm": 12
+          "sm": 12,
+          "doNotSave": true
         },
         "_testSend": {
           "type": "sendTo",
@@ -41,10 +43,7 @@
           "variant": "contained",
           "showProcess": true,
           "timeout": 30000,
-          "data": {
-            "to": "${data._testTo}",
-            "text": "${data._testText}"
-          },
+          "jsonData": "{"to":"${data._testTo}","text":"${data._testText}"}",
           "sm": 12
         }
       }

@@ -72,17 +72,8 @@ class OpenWa extends utils.Adapter {
     return res?.data ?? res;
   }
 
-  async _sendAndStore(to, text) {
-    const result = await this._sendText(to, text);
-    await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
-    await this.setStateAsync('send.lastError', '', true);
-    await this.setStateAsync('info.connection', true, true);
-    return result;
-  }
-
   async onMessage(obj) {
     if (!obj || !obj.command) return;
-
     if (obj.command !== 'send' && obj.command !== 'test') return;
 
     const p = obj.message || {};
@@ -90,29 +81,17 @@ class OpenWa extends utils.Adapter {
     const text = p.text ?? p.content ?? p.message ?? '';
 
     try {
-      const result = await this._sendAndStore(to, text);
+      const result = await this._sendText(to, text);
+      await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
+      await this.setStateAsync('send.lastError', '', true);
+      await this.setStateAsync('info.connection', true, true);
 
-      if (obj.callback) {
-        this.sendTo(obj.from, obj.command, {
-          success: true,
-          ok: true,
-          sent: true,
-          result,
-          message: `WhatsApp test message sent to ${to}`,
-        }, obj.callback);
-      }
+      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: true, success: true, result }, obj.callback);
     } catch (e) {
-      await this.setStateAsync('send.lastError', e.message, true);
+      await this.setStateAsync('send.lastError', e.message || String(e), true);
       await this.setStateAsync('info.connection', false, true);
-      this.log.error(`${obj.command} failed: ${e.message}`);
-      if (obj.callback) {
-        this.sendTo(obj.from, obj.command, {
-          success: false,
-          ok: false,
-          error: e.message,
-          message: `WhatsApp test failed: ${e.message}`,
-        }, obj.callback);
-      }
+      this.log.error(`${obj.command} failed: ${e.message || String(e)}`);
+      if (obj.callback) this.sendTo(obj.from, obj.command, { ok: false, success: false, error: e.message || String(e) }, obj.callback);
     }
   }
 
@@ -125,10 +104,13 @@ class OpenWa extends utils.Adapter {
     const to = String((await this.getStateAsync('send.to'))?.val ?? '').trim();
 
     try {
-      await this._sendAndStore(to, text);
+      const result = await this._sendText(to, text);
+      await this.setStateAsync('send.lastResult', JSON.stringify(result), true);
+      await this.setStateAsync('send.lastError', '', true);
+      await this.setStateAsync('info.connection', true, true);
       await this.setStateAsync('send.text', state.val, true);
     } catch (e) {
-      await this.setStateAsync('send.lastError', e.message, true);
+      await this.setStateAsync('send.lastError', e.message || String(e), true);
       await this.setStateAsync('info.connection', false, true);
       this.log.error(`Send failed: ${e.message}`);
     }

@@ -1,4 +1,4 @@
-# ioBroker.open-wa (v0.3.4)
+# ioBroker.open-wa (v0.3.5)
 
 ## Gateway contract (text)
 Adapter sends:
@@ -13,11 +13,10 @@ Body:
   "content": "Gateway läuft sauber 🚀"
 }
 
-Notes:
-- phone numbers are normalized automatically
-- group JIDs like `...@g.us` are preserved
-- Admin UI includes a direct test tab
-- adapter supports `send` and `test` commands
+`to` is normalized automatically from `+49...` to digits only for phone numbers. Existing WhatsApp JIDs like `@g.us` and `@c.us` are preserved.
+
+## Admin UI
+The adapter includes a test tab in the Admin UI. The test button sends the current recipient and message values to the backend via the `test` command.
 
 ## Blockly
 Sendto blocks:
